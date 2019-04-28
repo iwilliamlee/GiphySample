@@ -5,6 +5,7 @@ import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
@@ -14,6 +15,7 @@ import android.widget.BaseAdapter
 import android.widget.ListView
 import android.widget.SearchView
 import android.widget.TextView
+import com.application.giphysample.repo.GiphyService
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     var searchView: SearchView? = null
     var mAdapter: GiphyAdapter? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -29,7 +32,8 @@ class MainActivity : AppCompatActivity() {
         addAnimals()
 
         val rv_giphy_list = findViewById<RecyclerView>(R.id.giphy_list)
-        rv_giphy_list.layoutManager = LinearLayoutManager(this)
+//        rv_giphy_list.layoutManager = LinearLayoutManager(this)
+        rv_giphy_list.layoutManager = GridLayoutManager(this, 2)
         mAdapter = GiphyAdapter(animals, this)
         rv_giphy_list.adapter = mAdapter
         rv_giphy_list.itemAnimator = DefaultItemAnimator()
@@ -48,9 +52,10 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(query: String?): Boolean {
-                mAdapter?.filter?.filter(query)
+//                mAdapter?.filter?.filter(query)
                 return false;
             }
+
         })
         return super.onCreateOptionsMenu(menu)
     }
