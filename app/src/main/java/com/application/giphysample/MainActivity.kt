@@ -2,41 +2,59 @@ package com.application.giphysample
 
 import android.app.SearchManager
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.Menu
-import android.view.View
-import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.ListView
 import android.widget.SearchView
-import android.widget.TextView
-import com.application.giphysample.repo.GiphyService
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.paging.PagedList
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.application.giphysample.Model.GiphyModel
+import com.application.giphysample.retrofit.GiphyService
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
-
-
-    val animals: ArrayList<String> = ArrayList()
+    val TAG = "MainActivity"
     var searchView: SearchView? = null
-    var mAdapter: GiphyAdapter? = null
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var giphyAdapter: GiphyAdapter
+
+    val giphyService by lazy {
+        GiphyService.create()
+    }
+
+    var disposable: Disposable? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        addAnimals()
-
         val rv_giphy_list = findViewById<RecyclerView>(R.id.giphy_list)
 //        rv_giphy_list.layoutManager = LinearLayoutManager(this)
         rv_giphy_list.layoutManager = GridLayoutManager(this, 2)
-        mAdapter = GiphyAdapter(animals, this)
-        rv_giphy_list.adapter = mAdapter
+        giphyAdapter = GiphyAdapter(this)
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+
+
+        rv_giphy_list.adapter = giphyAdapter
         rv_giphy_list.itemAnimator = DefaultItemAnimator()
+//        disposable = mainViewModel.giphyList
+        mainViewModel.giphyList.observe(this, Observer<PagedList<GiphyModel>> {
+            Log.d(TAG, "giphy lits has changed")
+            giphyAdapter.submitList(it) })
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable?.dispose()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -46,8 +64,33 @@ class MainActivity : AppCompatActivity() {
         searchView!!.setSearchableInfo(searchManager.getSearchableInfo(componentName))
         searchView!!.maxWidth = Integer.MAX_VALUE
         searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                mAdapter?.filter?.filter(query)
+            override fun onQueryTextSubmit(newQuery: String?): Boolean {
+//                mAdapter?.filter?.filter(newQuery)
+                val giphyKey: String = "HfQl65WIsUozzymYWvvsrNOZOdNB6szA"
+
+                if(newQuery != null) {
+                    disposable?.dispose()
+                    Log.d(TAG, "Searching for new giphy")
+                    disposable = giphyService.searchGiphy(
+                        apiKey = giphyKey,
+                        query = newQuery,
+                        limit = 25,
+                        offset = 0,
+                        rating = "G",
+                        lang = "eng")
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            Log.d(TAG, "Got new list!")
+                            var newList: ArrayList<String> = ArrayList()
+                            it.data.forEach{
+                                newList.add(it.images.original.url)
+                            }
+//                            mAdapter?.updateGiphy(newGiphyList = newList);
+
+                        })
+                }
+
                 return false;
             }
 
@@ -60,38 +103,4 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    fun addAnimals() {
-        animals.add("dog")
-        animals.add("cat")
-        animals.add("owl")
-        animals.add("cheetah")
-        animals.add("raccoon")
-        animals.add("bird")
-        animals.add("snake")
-        animals.add("lizard")
-        animals.add("hamster")
-        animals.add("bear")
-        animals.add("lion")
-        animals.add("tiger")
-        animals.add("horse")
-        animals.add("frog")
-        animals.add("fish")
-        animals.add("shark")
-        animals.add("turtle")
-        animals.add("elephant")
-        animals.add("cow")
-        animals.add("beaver")
-        animals.add("bison")
-        animals.add("porcupine")
-        animals.add("rat")
-        animals.add("mouse")
-        animals.add("goose")
-        animals.add("deer")
-        animals.add("fox")
-        animals.add("moose")
-        animals.add("buffalo")
-        animals.add("monkey")
-        animals.add("penguin")
-        animals.add("parrot")
-    }
 }
