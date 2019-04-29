@@ -29,16 +29,16 @@ class GiphyDataSource(
                 offset = 0)
                 .subscribe({
 //                callback.onResult(it)
-                Log.d(TAG, "Got intial values from api")
+//                Log.d(TAG, "Got intial values from api")
                 callback.onResult(convertResponseToModel(it))
             }, {
-                    Log.d(TAG, "Error getting values: " + it.message)
+//                    Log.d(TAG, "Error getting values: " + it.message)
                 })
         )
     }
 
     override fun loadAfter(params: LoadParams<GiphyResponse.Pagination>, callback: LoadCallback<GiphyModel>) {
-        Log.d(TAG, "Starting to load after values")
+//        Log.d(TAG, "Starting to load after values")
         compositeDisposable.add(
             giphyService.searchGiphy(
                 query = query,
@@ -48,7 +48,7 @@ class GiphyDataSource(
 //                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                 //                callback.onResult(it)
-                Log.d(TAG, "Got after values from api page:" + params.key.offset + 1)
+//                Log.d(TAG, "Got after values from api page:" + params.key.offset + 1)
                 callback.onResult(convertResponseToModel(it))
             })
         )

@@ -25,6 +25,9 @@ class MainViewModel : ViewModel() {
 
     private var sourceFactory: GiphyDataSourceFactory
 
+    /**
+     * Initiate giphy daaasource with search as spiderman
+     */
     init {
         sourceFactory = GiphyDataSourceFactory("spiderman", GiphyService.create(), compositeDisposable)
         val config = PagedList.Config.Builder()
@@ -38,6 +41,12 @@ class MainViewModel : ViewModel() {
 
     }
 
+    /**
+     * Called from Activity when the query is updated
+     * Remove listeners,
+     * Recreate the data source with new query
+     * reassign listener
+     */
     fun updateQuery(context: AppCompatActivity, newQuery: String) {
         giphyList.removeObservers(context)
         sourceFactory = GiphyDataSourceFactory(newQuery, GiphyService.create(), compositeDisposable)
@@ -53,7 +62,7 @@ class MainViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        Log.d(TAG, "Clearing listeners")
+//        Log.d(TAG, "Clearing listeners")
         compositeDisposable.dispose()
     }
 }

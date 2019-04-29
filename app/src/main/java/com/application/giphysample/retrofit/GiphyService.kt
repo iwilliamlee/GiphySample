@@ -28,32 +28,23 @@ interface GiphyService {
 
 
 
-    @GET("search")
-    fun searchGiphyCallback(@Query("api_key") apiKey: String = "HfQl65WIsUozzymYWvvsrNOZOdNB6szA",
-                    @Query("q") query: String,
-                    @Query("limit") limit: Int = 25,
-                    @Query("offset") offset: Int,
-                    @Query("rating") rating: String = "G",
-                    @Query("lang") lang: String = "eng"):
-            Call<GiphyResponse.Result>
-
     companion object {
         fun create(): GiphyService {
-            val logging = HttpLoggingInterceptor()
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-            val httpClient = OkHttpClient.Builder()
-                .addInterceptor(logging)
-                .connectTimeout(5, TimeUnit.MINUTES) // Change it as per your requirement
-                .readTimeout(5, TimeUnit.MINUTES)// Change it as per your requirement
-                .writeTimeout(5, TimeUnit.MINUTES)// Change it as per your requirement
-            // <-- this is the important line!
+//            val logging = HttpLoggingInterceptor()
+//            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+//            val httpClient = OkHttpClient.Builder()
+//                .addInterceptor(logging)
+//                .connectTimeout(5, TimeUnit.MINUTES) // Change it as per your requirement
+//                .readTimeout(5, TimeUnit.MINUTES)// Change it as per your requirement
+//                .writeTimeout(5, TimeUnit.MINUTES)// Change it as per your requirement
+//            // <-- this is the important line!
 
 
             val retrofit = Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl("https://api.giphy.com/v1/gifs/")
-                .client(httpClient.build())
+//                .client(httpClient.build())
                 .build()
 
             return retrofit.create(GiphyService::class.java)

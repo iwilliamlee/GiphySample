@@ -7,6 +7,9 @@ import com.application.giphysample.retrofit.GiphyResponse
 import com.application.giphysample.retrofit.GiphyService
 import io.reactivex.disposables.CompositeDisposable
 
+/**
+ * Create GiphyDataSource
+ */
 class GiphyDataSourceFactory(
     private val query: String,
     private val giphyService: GiphyService,

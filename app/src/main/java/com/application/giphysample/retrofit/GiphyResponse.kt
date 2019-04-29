@@ -1,5 +1,8 @@
 package com.application.giphysample.retrofit
 
+/**
+ * Giphy JSON response from API
+ */
 object GiphyResponse {
     data class Result(
         val data: List<Data>,

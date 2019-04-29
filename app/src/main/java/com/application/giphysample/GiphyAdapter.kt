@@ -16,7 +16,7 @@ import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.giphy_list_item.view.*
 
 
-class GiphyAdapter(val context: Context) : PagedListAdapter<GiphyModel, ViewHolder>(GiphyDiffCallback), Filterable {
+class GiphyAdapter(val context: Context) : PagedListAdapter<GiphyModel, ViewHolder>(GiphyDiffCallback) {
 
     val TAG = "GiphyAdapter"
 
@@ -39,32 +39,6 @@ class GiphyAdapter(val context: Context) : PagedListAdapter<GiphyModel, ViewHold
             .into(holder.ivImage)
     }
 
-    override fun getFilter(): Filter {
-        return object: Filter() {
-            override fun performFiltering(charSequence: CharSequence): FilterResults {
-                val charString = charSequence.toString()
-                if(charString.isEmpty()) {
-//                    searchItems = items
-                } else {
-                    val filteredList : ArrayList<String> = ArrayList<String>();
-//                    for(row in searchItems) {
-//                        if(row.toLowerCase().contains(charString.toLowerCase())) {
-//                            filteredList.add(row)
-//                        }
-//                    }
-//                    searchItems = filteredList
-                }
-                val filteredResults = Filter.FilterResults()
-//                filteredResults.values = searchItems
-                return filteredResults
-            }
-
-            override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
-//                searchItems = filterResults.values as ArrayList<String>
-                notifyDataSetChanged()
-            }
-        }
-    }
 
 
     companion object {

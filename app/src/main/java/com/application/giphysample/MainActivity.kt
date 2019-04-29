@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.application.giphysample.Model.GiphyModel
 import com.application.giphysample.retrofit.GiphyService
+import com.bumptech.glide.Glide
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -26,18 +27,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var giphyAdapter: GiphyAdapter
 
 
-    val giphyService by lazy {
-        GiphyService.create()
-    }
-
-    var disposable: Disposable? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val rv_giphy_list = findViewById<RecyclerView>(R.id.giphy_list)
-//        rv_giphy_list.layoutManager = LinearLayoutManager(this)
         rv_giphy_list.layoutManager = GridLayoutManager(this, 2)
         giphyAdapter = GiphyAdapter(this)
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
@@ -45,9 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         rv_giphy_list.adapter = giphyAdapter
         rv_giphy_list.itemAnimator = DefaultItemAnimator()
-//        disposable = mainViewModel.giphyList
         mainViewModel.giphyList.observe(this, Observer<PagedList<GiphyModel>> {
-            Log.d(TAG, "giphy lits has changed")
             giphyAdapter.submitList(it)
         })
 
@@ -56,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        disposable?.dispose()
+        Glide.get(this).clearMemory();
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -66,9 +58,12 @@ class MainActivity : AppCompatActivity() {
         searchView!!.setSearchableInfo(searchManager.getSearchableInfo(componentName))
         searchView!!.maxWidth = Integer.MAX_VALUE
         val context = this as AppCompatActivity;
+
+        //When search changes, alert and reobserve viewmodel
         searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(newQuery: String?): Boolean {
                 if(newQuery != null) {
+                    Glide.get(context).clearMemory();
                     mainViewModel.updateQuery(context, newQuery)
                     mainViewModel.giphyList.observe(context, Observer<PagedList<GiphyModel>> {
                         Log.d(TAG, "giphy lits has changed")
@@ -78,8 +73,8 @@ class MainActivity : AppCompatActivity() {
                 return false;
             }
 
+            //Do nothing because we only care about full searches
             override fun onQueryTextChange(query: String?): Boolean {
-//                mAdapter?.filter?.filter(query)
                 return false;
             }
 
