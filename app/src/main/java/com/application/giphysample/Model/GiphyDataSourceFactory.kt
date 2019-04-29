@@ -20,7 +20,9 @@ class GiphyDataSourceFactory(
     override fun create(): DataSource<GiphyResponse.Pagination, GiphyModel> {
         Log.d(TAG, "Creating Data source")
         val giphyDataSource = GiphyDataSource(query, giphyService, compositeDisposable)
+
         usersDataSourceLiveData.postValue(giphyDataSource)
         return giphyDataSource
     }
+
 }

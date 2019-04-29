@@ -25,12 +25,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mainViewModel: MainViewModel
     private lateinit var giphyAdapter: GiphyAdapter
 
+
     val giphyService by lazy {
         GiphyService.create()
     }
 
     var disposable: Disposable? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +48,9 @@ class MainActivity : AppCompatActivity() {
 //        disposable = mainViewModel.giphyList
         mainViewModel.giphyList.observe(this, Observer<PagedList<GiphyModel>> {
             Log.d(TAG, "giphy lits has changed")
-            giphyAdapter.submitList(it) })
+            giphyAdapter.submitList(it)
+        })
+
 
     }
 
@@ -63,34 +65,16 @@ class MainActivity : AppCompatActivity() {
         searchView = menu?.findItem(R.id.app_bar_search)?.actionView as SearchView
         searchView!!.setSearchableInfo(searchManager.getSearchableInfo(componentName))
         searchView!!.maxWidth = Integer.MAX_VALUE
+        val context = this as AppCompatActivity;
         searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(newQuery: String?): Boolean {
-//                mAdapter?.filter?.filter(newQuery)
-                val giphyKey: String = "HfQl65WIsUozzymYWvvsrNOZOdNB6szA"
-
                 if(newQuery != null) {
-                    disposable?.dispose()
-                    Log.d(TAG, "Searching for new giphy")
-                    disposable = giphyService.searchGiphy(
-                        apiKey = giphyKey,
-                        query = newQuery,
-                        limit = 25,
-                        offset = 0,
-                        rating = "G",
-                        lang = "eng")
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            Log.d(TAG, "Got new list!")
-                            var newList: ArrayList<String> = ArrayList()
-                            it.data.forEach{
-                                newList.add(it.images.original.url)
-                            }
-//                            mAdapter?.updateGiphy(newGiphyList = newList);
-
-                        })
+                    mainViewModel.updateQuery(context, newQuery)
+                    mainViewModel.giphyList.observe(context, Observer<PagedList<GiphyModel>> {
+                        Log.d(TAG, "giphy lits has changed")
+                        giphyAdapter.submitList(it)
+                    })
                 }
-
                 return false;
             }
 

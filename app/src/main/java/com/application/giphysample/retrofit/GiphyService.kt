@@ -1,5 +1,6 @@
 package com.application.giphysample.retrofit
 
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.Retrofit
@@ -38,20 +39,21 @@ interface GiphyService {
 
     companion object {
         fun create(): GiphyService {
-//            val logging = HttpLoggingInterceptor()
-//            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-//            val httpClient = OkHttpClient.Builder()
-//                .addInterceptor(logging)
-//                .connectTimeout(5, TimeUnit.MINUTES) // Change it as per your requirement
-//                .readTimeout(5, TimeUnit.MINUTES)// Change it as per your requirement
-//                .writeTimeout(5, TimeUnit.MINUTES)// Change it as per your requirement
-//            // <-- this is the important line!
+            val logging = HttpLoggingInterceptor()
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            val httpClient = OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .connectTimeout(5, TimeUnit.MINUTES) // Change it as per your requirement
+                .readTimeout(5, TimeUnit.MINUTES)// Change it as per your requirement
+                .writeTimeout(5, TimeUnit.MINUTES)// Change it as per your requirement
+            // <-- this is the important line!
+
 
             val retrofit = Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl("https://api.giphy.com/v1/gifs/")
-//                .client(httpClient.build())
+                .client(httpClient.build())
                 .build()
 
             return retrofit.create(GiphyService::class.java)

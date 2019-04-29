@@ -1,6 +1,8 @@
 package com.application.giphysample
 
+import android.content.Context
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
@@ -21,10 +23,24 @@ class MainViewModel : ViewModel() {
 
     private val pageSize = 25
 
-    private val sourceFactory: GiphyDataSourceFactory
+    private var sourceFactory: GiphyDataSourceFactory
 
     init {
-        sourceFactory = GiphyDataSourceFactory("aquaman", GiphyService.create(), compositeDisposable)
+        sourceFactory = GiphyDataSourceFactory("spiderman", GiphyService.create(), compositeDisposable)
+        val config = PagedList.Config.Builder()
+            .setPageSize(pageSize)
+            .setInitialLoadSizeHint(pageSize * 2)
+            .setEnablePlaceholders(false)
+            .build()
+        giphyList = LivePagedListBuilder<GiphyResponse.Pagination, GiphyModel>(sourceFactory, config)
+            .setFetchExecutor(Executors.newSingleThreadExecutor())
+            .build()
+
+    }
+
+    fun updateQuery(context: AppCompatActivity, newQuery: String) {
+        giphyList.removeObservers(context)
+        sourceFactory = GiphyDataSourceFactory(newQuery, GiphyService.create(), compositeDisposable)
         val config = PagedList.Config.Builder()
             .setPageSize(pageSize)
             .setInitialLoadSizeHint(pageSize * 2)
